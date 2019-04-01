@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd ">
+
+    <bean class="org.apache.shiro.spring.web.ShiroFilterFactoryBean" id="shiroFilter">
+        <property name="securityManager" ref="securityManager"/>
+        <property name="loginUrl" value="/login.html"/>
+        <!--<property name="successUrl" value="/index.html"/>-->
+        <property name="unauthorizedUrl" value="/403.html"/>
+        <property name="filterChainDefinitions">
+            <value>
+                /login.html=anon
+                /user/subLogin=anon
+                /user/logout=anon
+                /dist/index.html=anon
+                /**=authc
+            </value>
+        </property>
+        <!--将权限数据库存储到数据库中管理-->
+        <!--实例工厂方法-->
+        <!--<property name="filterChainDefinitionMap" ref="filterChainDefinitionMap"/>-->
+
+    </bean>
+
+    <!--开启shiro注解-->
+    <bean class="org.apache.shiro.spring.LifecycleBeanPostProcessor"/>
+    <bean class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
+        <property name="securityManager" ref="securityManager"/>
+    </bean>
+
+    <!--配置securitymanager-->
+    <bean class="org.apache.shiro.web.mgt.DefaultWebSecurityManager" id="securityManager">
+        <property name="realm" ref="customRealm"/>
+    </bean>
+    <!--自定义realm-->
+    <bean class="com.ssm.demo.realm.CustomRealm" id="customRealm">
+        <property name="credentialsMatcher" ref="hashedCredentialsMatcher"/>
+    </bean>
+
+    <!--配置凭证匹配器-->
+    <bean class="org.apache.shiro.authc.credential.HashedCredentialsMatcher" id="hashedCredentialsMatcher">
+        <property name="hashAlgorithmName" value="md5"/>
+        <property name="hashIterations" value="1"/>
+    </bean>
+
+</beans>
